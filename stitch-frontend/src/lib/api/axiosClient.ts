@@ -14,7 +14,7 @@ const axiosClient = axios.create({
     "Content-Type": "application/json",
   },
 });
-// ➤ REQUEST INTERCEPTOR
+//  REQUEST INTERCEPTOR
 axiosClient.interceptors.request.use(
   (config) => {
     // Example: Attach auth token from localStorage/Zustand
@@ -26,3 +26,19 @@ axiosClient.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
+//  RESPONSE INTERCEPTOR
+axiosClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("API Error:", error);
+
+    // Example: Auto logout on 401
+    if (error.response?.status === 401) {
+      localStorage.removeItem("authToken");
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+export default axiosClient;
